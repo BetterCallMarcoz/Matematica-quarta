@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Il Quaderno Magico di Matematica - 4ª Elementare</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background-color: #f0f7ff;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .quaderno-grid {
+      background-color: #ffffff;
+      background-image:
+        linear-gradient(to right, #dbeafe 1px, transparent 1px),
+        linear-gradient(to bottom, #dbeafe 1px, transparent 1px);
+      background-size: 40px 40px;
+      border-left: 3px solid #f87171;
+    }
+    @media (max-width: 640px) {
+      .quaderno-grid {
+        background-size: 34px 34px;
+      }
+    }
+    .cell-box {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.35rem;
+      position: relative;
+      user-select: none;
+    }
+    @media (max-width: 640px) {
+      .cell-box {
+        width: 34px;
+        height: 34px;
+        font-size: 1.15rem;
+      }
+    }
+    .cappellino {
+      border-top: 3px solid #f59e0b;
+      border-left: 2px solid #f59e0b;
+      border-right: 2px solid #f59e0b;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      height: 8px;
+      position: absolute;
+      top: -6px;
+      left: 3px;
+      right: 3px;
+    }
+    .cappellino-single {
+      border-top: 3px solid #10b981;
+      border-radius: 999px;
+      height: 6px;
+      position: absolute;
+      top: -5px;
+      left: 6px;
+      right: 6px;
+    }
+    /* Colori didattici ufficiali */
+    .col-u { color: #2563eb; }  /* Blu: Unità */
+    .col-da { color: #dc2626; } /* Rosso: Decine */
+    .col-h { color: #16a34a; }  /* Verde: Centinaia */
+    .col-k { color: #ea580c; }  /* Arancione: Migliaia */
+    .bg-u { background-color: #dbeafe; color: #1d4ed8; }
+    .bg-da { background-color: #fee2e2; color: #b91c1c; }
+    .bg-h { background-color: #dcfce7; color: #15803d; }
+    .bg-k { background-color: #ffedd5; color: #c2410c; }
+    .active-step-pulse {
+      animation: pulse-ring 1.4s infinite;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+      50% { transform: scale(1.06); box-shadow: 0 0 0 6px rgba(251, 191, 36, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 pb-12">
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-lg sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-3 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="flex items-center gap-2.5">
+        <div class="w-11 h-11 rounded-2xl bg-yellow-300 text-slate-900 flex items-center justify-center text-2xl shadow-md">
+          🦉
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold leading-tight">Il Quaderno di Archimede</h1>
+          <p class="text-xs text-blue-100">Matematica Interattiva • Classe 4ª Elementare</p>
+        </div>
+      </div>
+
+      <!-- Navigazione Sezioni -->
+      <nav class="flex bg-white/15 p-1 rounded-xl gap-1 text-xs sm:text-sm font-semibold">
+        <button onclick="switchMainTab('colonna')" id="tab-btn-colonna" class="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow transition">
+          📐 In Colonna
+        </button>
+        <button onclick="switchMainTab('proprieta')" id="tab-btn-proprieta" class="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-white hover:bg-white/10 transition">
+          🪄 Proprietà
+        </button>
+        <button onclick="switchMainTab('quiz')" id="tab-btn-quiz" class="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-white hover:bg-white/10 transition">
+          🏆 Sfida Quiz
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-3 pt-4">
+
+    <!-- ========================================== -->
+    <!-- SEZIONE 1: OPERAZIONI IN COLONNA PASSO-PASSO -->
+    <!-- ========================================== -->
+    <section id="section-colonna" class="space-y-4">
+
+      <!-- Selettore Operazione -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <button onclick="selectOperation('add')" id="op-btn-add" class="op-card flex items-center justify-center gap-2 p-3 rounded-2xl font-bold text-sm sm:text-base border-2 transition shadow-sm bg-blue-600 text-white border-blue-700">
+          <span class="text-xl">➕</span> Addizione
+        </button>
+        <button onclick="selectOperation('sub')" id="op-btn-sub" class="op-card flex items-center justify-center gap-2 p-3 rounded-2xl font-bold text-sm sm:text-base border-2 transition shadow-sm bg-white text-slate-700 border-slate-200 hover:border-rose-300">
+          <span class="text-xl">➖</span> Sottrazione
+        </button>
+        <button onclick="selectOperation('mul')" id="op-btn-mul" class="op-card flex items-center justify-center gap-2 p-3 rounded-2xl font-bold text-sm sm:text-base border-2 transition shadow-sm bg-white text-slate-700 border-slate-200 hover:border-amber-300">
+          <span class="text-xl">✖️</span> Moltiplicazione
+        </button>
+        <button onclick="selectOperation('div')" id="op-btn-div" class="op-card flex items-center justify-center gap-2 p-3 rounded-2xl font-bold text-sm sm:text-base border-2 transition shadow-sm bg-white text-slate-700 border-slate-200 hover:border-emerald-300">
+          <span class="text-xl">➗</span> Divisione
+        </button>
+      </div>
+
+      <!-- Barra Inserimento Numeri ed Esempi Rapidi -->
+      <div class="bg-white rounded-2xl p-3 sm:p-4 shadow-sm border border-slate-200">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1">Numeri:</label>
+            <input type="number" id="input-num1" value="438" min="1" max="9999"
+              class="w-24 sm:w-28 px-3 py-2 text-lg font-bold text-center rounded-xl border-2 border-indigo-200 focus:border-indigo-500 focus:outline-none bg-indigo-50/40"
+              onchange="updateNumbersFromInputs()" />
+            <span id="op-symbol-label" class="text-2xl font-bold text-indigo-600 px-1">+</span>
+            <input type="number" id="input-num2" value="285" min="1" max="999"
+              class="w-20 sm:w-24 px-3 py-2 text-lg font-bold text-center rounded-xl border-2 border-indigo-200 focus:border-indigo-500 focus:outline-none bg-indigo-50/40"
+              onchange="updateNumbersFromInputs()" />
+            <button onclick="updateNumbersFromInputs()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl shadow-sm transition text-sm">
+              Calcola 🔄
+            </button>
+          </div>
+
+          <!-- Esempi rapidi -->
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-xs font-semibold text-slate-400">Esempi 4ª:</span>
+            <div id="presets-container" class="flex flex-wrap gap-1.5"></div>
+          </div>
+        </div>
+
+        <!-- Legenda Colori Valore Posizionale -->
+        <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-semibold text-slate-500">Colori del quaderno:</span>
+            <span class="px-2 py-0.5 rounded-md bg-k font-bold">uk = Migliaia</span>
+            <span class="px-2 py-0.5 rounded-md bg-h font-bold">h = Centinaia</span>
+            <span class="px-2 py-0.5 rounded-md bg-da font-bold">da = Decine</span>
+            <span class="px-2 py-0.5 rounded-md bg-u font-bold">u = Unità</span>
+          </div>
+          <div id="terms-names-badge" class="text-slate-500 font-medium"></div>
+        </div>
+      </div>
+
+      <!-- FUMETTO DEL GUFO ARCHIMEDE + CONTROLLI PASSO-PASSO -->
+      <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-2xl p-3 sm:p-4 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <div class="text-3xl sm:text-4xl select-none pt-0.5">🦉</div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span id="step-badge" class="px-2.5 py-0.5 bg-amber-400 text-slate-900 font-bold rounded-full text-xs">
+                  Passo 1 di 4
+                </span>
+                <span id="step-title" class="font-bold text-amber-900 text-sm sm:text-base"> Prepariamo la colonna</span>
+              </div>
+              <p id="step-explanation" class="text-slate-700 text-sm sm:text-base mt-1 leading-snug"></p>
+            </div>
+          </div>
+
+          <!-- Pulsanti Navigazione Passi -->
+          <div class="flex items-center justify-center sm:justify-end gap-1.5 shrink-0 bg-white/80 p-1.5 rounded-xl border border-amber-200">
+            <button onclick="goToStep(0)" id="btn-first" class="px-2.5 py-2 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 transition" title="Torna all'inizio">
+              ⏮
+            </button>
+            <button onclick="changeStep(-1)" id="btn-prev" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 disabled:opacity-40 transition">
+              ◀ Indietro
+            </button>
+            <button onclick="changeStep(1)" id="btn-next" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm disabled:opacity-40 transition">
+              Avanti ▶
+            </button>
+            <button onclick="goToLastStep()" id="btn-last" class="px-2.5 py-2 rounded-lg text-xs font-bold bg-indigo-100 hover:bg-indigo-200 text-indigo-700 disabled:opacity-40 transition" title="Mostra tutto">
+              ⏭ Tutto
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AREA PRINCIPALE: QUADERNO A QUADRETTI + BOX LATERALE (TABELLINA / PROVA) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+
+        <!-- Foglio a Quadretti -->
+        <div class="lg:col-span-2 quaderno-grid rounded-2xl shadow-md border border-slate-200 p-4 sm:p-6 overflow-x-auto flex justify-center min-h-[340px] items-center">
+          <div id="notebook-canvas" class="inline-block"></div>
+        </div>
+
+        <!-- Pannello Laterale: Aiuto Visivo / Tabellina / Prova -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+          <h3 id="side-panel-title" class="font-bold text-base text-indigo-900 flex items-center gap-2">
+            <span>💡</span> Trucco di Archimede
+          </h3>
+          <div id="side-panel-content" class="text-sm text-slate-700 space-y-2"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SEZIONE 2: LABORATORIO DELLE PROPRIETÀ     -->
+    <!-- ========================================== -->
+    <section id="section-proprieta" class="hidden space-y-4">
+      <!-- Scelta Proprietà -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <button onclick="selectProperty('commutativa')" id="prop-btn-commutativa" class="p-3 rounded-2xl font-bold text-sm border-2 transition bg-indigo-600 text-white border-indigo-700 shadow-sm">
+          🔄 Commutativa
+        </button>
+        <button onclick="selectProperty('associativa')" id="prop-btn-associativa" class="p-3 rounded-2xl font-bold text-sm border-2 transition bg-white text-slate-700 border-slate-200">
+          🧺 Associativa
+        </button>
+        <button onclick="selectProperty('distributiva')" id="prop-btn-distributiva" class="p-3 rounded-2xl font-bold text-sm border-2 transition bg-white text-slate-700 border-slate-200">
+          ✂️ Distributiva
+        </button>
+        <button onclick="selectProperty('invariantiva')" id="prop-btn-invariantiva" class="p-3 rounded-2xl font-bold text-sm border-2 transition bg-white text-slate-700 border-slate-200">
+          ⚖️ Invariantiva
+        </button>
+      </div>
+
+      <!-- Contenuto Laboratorio -->
+      <div id="property-lab-container" class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200"></div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SEZIONE 3: SFIDA DEI CAMPIONI (QUIZ)       -->
+    <!-- ========================================== -->
+    <section id="section-quiz" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200 max-w-2xl mx-auto">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+          <div>
+            <span class="text-xs font-bold uppercase text-indigo-500">Allenamento 4ª Elementare</span>
+            <h2 class="text-lg sm:text-xl font-bold text-slate-800">La Sfida di Archimede 🏆</h2>
+          </div>
+          <div class="px-3 py-1.5 rounded-xl bg-amber-100 text-amber-900 font-bold text-sm">
+            ⭐ Punti: <span id="quiz-score">0</span>
+          </div>
+        </div>
+
+        <div id="quiz-container"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // STATO DELL'APPLICAZIONE
+    // =========================================================================
+    let currentMainTab = 'colonna';
+    let currentOp = 'div'; // Partiamo con la divisione a 3 cifre richiesta dall'utente!
+    let num1 = 438;
+    let num2 = 3;
+    let steps = [];
+    let currentStepIndex = 0;
+
+    const PRESETS = {
+      add: [
+        { a: 438, b: 285, label: '438 + 285' },
+        { a: 1456, b: 789, label: '1456 + 789' },
+        { a: 674, b: 528, label: '674 + 528' }
+      ],
+      sub: [
+        { a: 624, b: 258, label: '624 - 258' },
+        { a: 803, b: 347, label: '803 - 347 (con lo 0)' },
+        { a: 1542, b: 675, label: '1542 - 675' }
+      ],
+      mul: [
+        { a: 136, b: 4, label: '136 × 4 (1 cifra)' },
+        { a: 45, b: 23, label: '45 × 23 (2 cifre)' },
+        { a: 124, b: 15, label: '124 × 15 (3×2 cifre)' }
+      ],
+      div: [
+        { a: 438, b: 3, label: '438 : 3 (3 cifre)' },
+        { a: 752, b: 6, label: '752 : 6 (con resto)' },
+        { a: 258, b: 6, label: '258 : 6 (cappellino su 2 cifre)' },
+        { a: 864, b: 24, label: '864 : 24 (divisore a 2 cifre)' }
+      ]
+    };
+
+    const PLACE_NAMES = ['Unità (u)', 'Decine (da)', 'Centinaia (h)', 'Unità di migliaia (uk)'];
+    const PLACE_SHORT = ['u', 'da', 'h', 'uk'];
+    const PLACE_CLASSES = ['col-u', 'col-da', 'col-h', 'col-k'];
+    const PLACE_BG = ['bg-u', 'bg-da', 'bg-h', 'bg-k'];
+
+    function getPlaceColorClass(colFromRight) {
+      return PLACE_CLASSES[Math.min(colFromRight, 3)];
+    }
+
+    // =========================================================================
+    // NAVIGAZIONE TABS
+    // =========================================================================
+    function switchMainTab(tab) {
+      currentMainTab = tab;
+      ['colonna', 'proprieta', 'quiz'].forEach(t => {
+        document.getElementById('section-' + t).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById('tab-btn-' + t);
+        if (t === tab) {
+          btn.className = 'flex-1 sm:flex-initial px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow transition';
+        } else {
+          btn.className = 'flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-white hover:bg-white/10 transition';
+        }
+      });
+      if (tab === 'proprieta') selectProperty(currentProperty);
+      if (tab === 'quiz') renderQuizQuestion();
+    }
+
+    function selectOperation(op) {
+      currentOp = op;
+      const styles = {
+        add: 'bg-blue-600 text-white border-blue-700',
+        sub: 'bg-rose-600 text-white border-rose-700',
+        mul: 'bg-amber-500 text-white border-amber-600',
+        div: 'bg-emerald-600 text-white border-emerald-700'
+      };
+      ['add', 'sub', 'mul', 'div'].forEach(o => {
+        const btn = document.getElementById('op-btn-' + o);
+        if (o === op) {
+          btn.className = `op-card flex items-center justify-center gap-2 p-3 rounded-2xl font-bold text-sm sm:text-base border-2 transition shadow-sm ${styles[o]}`;
+        } else {
+          btn.className = 'op-card flex items-center justify-center gap-2 p-3 rounded-2xl font-bold text-sm sm:text-base border-2 transition shadow-sm bg-white text-slate-700 border-slate-200 hover:bg-slate-50';
+        }
+      });
+
+      const symbols = { add: '+', sub: '−', mul: '×', div: ':' };
+      document.getElementById('op-symbol-label').textContent = symbols[op];
+
+      const termsNames = {
+        add: 'Addendo + Addendo = Somma o Totale',
+        sub: 'Minuendo − Sottraendo = Resto o Differenza',
+        mul: 'Moltiplicando × Moltiplicatore = Prodotto',
+        div: 'Dividendo : Divisore = Quoziente (con eventuale Resto)'
+      };
+      document.getElementById('terms-names-badge').textContent = '📖 ' + termsNames[op];
+
+      // Carica primo preset dell'operazione
+      const firstPreset = PRESETS[op][0];
+      document.getElementById('input-num1').value = firstPreset.a;
+      document.getElementById('input-num2').value = firstPreset.b;
+
+      renderPresets();
+      updateNumbersFromInputs();
+    }
+
+    function renderPresets() {
+      const container = document.getElementById('presets-container');
+      container.innerHTML = '';
+      PRESETS[currentOp].forEach(p => {
+        const b = document.createElement('button');
+        b.className = 'px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-700 transition border border-slate-200';
+        b.textContent = p.label;
+        b.onclick = () => {
+          document.getElementById('input-num1').value = p.a;
+          document.getElementById('input-num2').value = p.b;
+          updateNumbersFromInputs();
+        };
+        container.appendChild(b);
+      });
+    }
+
+    function updateNumbersFromInputs() {
+      let a = parseInt(document.getElementById('input-num1').value, 10);
+      let b = parseInt(document.getElementById('input-num2').value, 10);
+      if (isNaN(a) || a < 1) a = 12;
+      if (isNaN(b) || b < 1) b = 3;
+      a = Math.min(a, 9999);
+
+      if (currentOp === 'sub' && a < b) {
+        // Scambia automaticamente per evitare numeri negativi in 4a elementare
+        const tmp = a; a = b; b = tmp;
+      }
+      if (currentOp === 'mul') {
+        a = Math.min(a, 999);
+        b = Math.min(b, 99);
+      }
+      if (currentOp === 'div') {
+        b = Math.max(1, Math.min(b, 99));
+        if (a < b) a = b * 3;
+      }
+
+      document.getElementById('input-num1').value = a;
+      document.getElementById('input-num2').value = b;
+      num1 = a;
+      num2 = b;
+
+      generateSteps();
+      currentStepIndex = 0;
+      renderCurrentStep();
+    }
+
+    function changeStep(delta) {
+      const next = currentStepIndex + delta;
+      if (next >= 0 && next < steps.length) {
+        currentStepIndex = next;
+        renderCurrentStep();
+      }
+    }
+
+    function goToStep(idx) {
+      currentStepIndex = Math.max(0, Math.min(idx, steps.length - 1));
+      renderCurrentStep();
+    }
+
+    function goToLastStep() {
+      currentStepIndex = steps.length - 1;
+      renderCurrentStep();
+    }
+
+    // =========================================================================
+    // GENERATORI PASSO-PASSO PER LE 4 OPERAZIONI
+    // =========================================================================
+    function generateSteps() {
+      if (currentOp === 'add') steps = buildAdditionSteps(num1, num2);
+      else if (currentOp === 'sub') steps = buildSubtractionSteps(num1, num2);
+      else if (currentOp === 'mul') steps = buildMultiplicationSteps(num1, num2);
+      else if (currentOp === 'div') steps = buildDivisionSteps(num1, num2);
+    }
+
+    // -------------------------------------------------------------------------
+    // 1. ADDIZIONE IN COLONNA
+    // -------------------------------------------------------------------------
+    function buildAdditionSteps(a, b) {
+      const sum = a + b;
+      const numCols = Math.max(String(a).length, String(b).length, String(sum).length);
+      const aDigits = String(a).padStart(numCols, ' ').split('');
+      const bDigits = String(b).padStart(numCols, ' ').split('');
+
+      const list = [];
+      let carries = Array(numCols).fill('');
+      let resDigits = Array(numCols).fill('');
+
+      list.push({
+        title: 'Incolonniamo i numeri',
+        explanation: `Allineiamo <b>${a}</b> e <b>${b}</b> in colonna: le unità (<b>u</b> blu) sotto le unità, le decine (<b>da</b> rosse) sotto le decine e così via.`,
+        numCols, aDigits, bDigits, carries: [...carries], resDigits: [...resDigits], activeCol: -1
+      });
+
+      let carry = 0;
+      for (let c = numCols - 1; c >= 0; c--) {
+        const posFromRight = numCols - 1 - c;
+        const d1 = aDigits[c] === ' ' ? 0 : parseInt(aDigits[c], 10);
+        const d2 = bDigits[c] === ' ' ? 0 : parseInt(bDigits[c], 10);
+        if (aDigits[c] === ' ' && bDigits[c] === ' ' && carry === 0) continue;
+
+        const total = d1 + d2 + carry;
+        const digit = total % 10;
+        const nextCarry = Math.floor(total / 10);
+
+        resDigits[c] = String(digit);
+        if (nextCarry > 0 && c - 1 >= 0) {
+          carries[c - 1] = String(nextCarry);
+        }
+
+        let exp = `Nella colonna delle <b>${PLACE_NAMES[posFromRight] || 'migliaia'}</b>: calcoliamo <b>${d1} + ${d2}</b>`;
+        if (carry > 0) exp += ` + <b>${carry}</b> (di riporto)`;
+        exp += ` = <b>${total}</b>. `;
+        if (nextCarry > 0) {
+          exp += `Scriviamo <b>${digit}</b> e riportiamo <b>+${nextCarry}</b> in alto nella colonna a sinistra!`;
+        } else {
+          exp += `Scriviamo <b>${digit}</b> nel risultato.`;
+        }
+
+        list.push({
+          title: `Sommiamo le ${PLACE_NAMES[posFromRight] || 'cifre'}`,
+          explanation: exp,
+          numCols, aDigits, bDigits, carries: [...carries], resDigits: [...resDigits], activeCol: c
+        });
+
+        carry = nextCarry;
+      }
+
+      list.push({
+        title: 'Addizione completata! 🎉',
+        explanation: `Ottimo lavoro! La somma di <b>${a} + ${b}</b> è <b>${sum}</b>.`,
+        numCols, aDigits, bDigits, carries: [...carries], resDigits: [...resDigits], activeCol: -1, done: true
+      });
+
+      return list;
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. SOTTRAZIONE IN COLONNA COI PRESTITI
+    // -------------------------------------------------------------------------
+    function buildSubtractionSteps(a, b) {
+      const diff = a - b;
+      const numCols = Math.max(String(a).length, String(b).length);
+      const aOrig = String(a).padStart(numCols, ' ').split('');
+      const bDigits = String(b).padStart(numCols, ' ').split('');
+
+      let workingTop = aOrig.map(ch => (ch === ' ' ? 0 : parseInt(ch, 10)));
+      let crossed = Array(numCols).fill(false);
+      let topBadge = Array(numCols).fill('');
+      let resDigits = Array(numCols).fill('');
+
+      const list = [];
+      list.push({
+        title: 'Incolonniamo Minuendo e Sottraendo',
+        explanation: `Scriviamo il minuendo <b>${a}</b> sopra e il sottraendo <b>${b}</b> sotto, ben allineati per valore posizionale.`,
+        numCols, aOrig, bDigits, crossed: [...crossed], topBadge: [...topBadge], resDigits: [...resDigits], activeCol: -1
+      });
+
+      for (let c = numCols - 1; c >= 0; c--) {
+        const posFromRight = numCols - 1 - c;
+        const d2 = bDigits[c] === ' ' ? 0 : parseInt(bDigits[c], 10);
+        let d1 = workingTop[c];
+
+        if (d1 < d2) {
+          // Cerchiamo la prima colonna a sinistra > 0
+          let k = c - 1;
+          while (k >= 0 && workingTop[k] === 0) k--;
+          // Propaghiamo il prestito da k fino a c
+          for (let m = k; m < c; m++) {
+            workingTop[m] -= 1;
+            crossed[m] = true;
+            topBadge[m] = String(workingTop[m]);
+            workingTop[m + 1] += 10;
+            topBadge[m + 1] = String(workingTop[m + 1]);
+          }
+          d1 = workingTop[c];
+
+          list.push({
+            title: `Chiediamo un prestito! (${PLACE_SHORT[posFromRight]})`,
+            explanation: `Nella colonna delle <b>${PLACE_NAMES[posFromRight]}</b> non possiamo fare ${d1 - 10} − ${d2}. Chiediamo <b>1 decina in prestito</b> alla colonna a sinistra: ora abbiamo <b>${d1}</b>!`,
+            numCols, aOrig, bDigits, crossed: [...crossed], topBadge: [...topBadge], resDigits: [...resDigits], activeCol: c
+          });
+        }
+
+        const sub = d1 - d2;
+        resDigits[c] = String(sub);
+
+        list.push({
+          title: `Sottraiamo le ${PLACE_NAMES[posFromRight]}`,
+          explanation: `Calcoliamo <b>${d1} − ${d2} = ${sub}</b> e scriviamo <b>${sub}</b> sotto la linea nella colonna <b>${PLACE_SHORT[posFromRight]}</b>.`,
+          numCols, aOrig, bDigits, crossed: [...crossed], topBadge: [...topBadge], resDigits: [...resDigits], activeCol: c
+        });
+      }
+
+      list.push({
+        title: 'Sottrazione completata! 🎉',
+        explanation: `Perfetto! La differenza tra <b>${a}</b> e <b>${b}</b> è <b>${diff}</b>. Prova veloce: ${diff} + ${b} = ${a} ✔`,
+        numCols, aOrig, bDigits, crossed: [...crossed], topBadge: [...topBadge], resDigits: [...resDigits], activeCol: -1, done: true
+      });
+
+      return list;
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. MOLTIPLICAZIONE IN COLONNA (1 O 2 CIFRE AL MOLTIPLICATORE)
+    // -------------------------------------------------------------------------
+    function buildMultiplicationSteps(a, b) {
+      const prod = a * b;
+      const bStr = String(b);
+      const twoDigitB = bStr.length === 2;
+      const numCols = Math.max(String(a).length + bStr.length, String(prod).length, 4);
+
+      const aDigits = String(a).padStart(numCols, ' ').split('');
+      const bDigits = String(b).padStart(numCols, ' ').split('');
+
+      const bUnits = parseInt(bStr[bStr.length - 1], 10);
+      const bTens = twoDigitB ? parseInt(bStr[0], 10) : 0;
+
+      const list = [];
+      let p1Digits = Array(numCols).fill('');
+      let p2Digits = Array(numCols).fill('');
+      let carries = Array(numCols).fill('');
+      let finalDigits = Array(numCols).fill('');
+
+      list.push({
+        title: 'Prepariamo la moltiplicazione',
+        explanation: `Scriviamo <b>${a} × ${b}</b> in colonna. Partiamo sempre moltiplicando tutto il primo numero per le <b>unità</b> del moltiplicatore (<b>${bUnits}</b>).`,
+        numCols, aDigits, bDigits, p1Digits: [...p1Digits], p2Digits: [...p2Digits], carries: [...carries], finalDigits: [...finalDigits], twoDigitB, activeCol: -1
+      });
+
+      // Moltiplicazione per le unità di b
+      const aStr = String(a);
+      let carry = 0;
+      for (let i = aStr.length - 1; i >= 0; i--) {
+        const colIdx = numCols - (aStr.length - i);
+        const dA = parseInt(aStr[i], 10);
+        const val = dA * bUnits + carry;
+        const digit = val % 10;
+        const nextCarry = Math.floor(val / 10);
+
+        p1Digits[colIdx] = String(digit);
+        if (i === 0 && nextCarry > 0) {
+          p1Digits[colIdx - 1] = String(nextCarry);
+        } else if (nextCarry > 0) {
+          carries[colIdx - 1] = '+' + nextCarry;
+        }
+
+        let exp = `Moltiplichiamo <b>${bUnits} × ${dA}</b>`;
+        if (carry > 0) exp += ` + <b>${carry}</b> (riporto)`;
+        exp += ` = <b>${val}</b>. `;
+        if (nextCarry > 0 && i > 0) {
+          exp += `Scriviamo <b>${digit}</b> e teniamo <b>+${nextCarry}</b> di riporto.`;
+        } else if (nextCarry > 0 && i === 0) {
+          exp += `Essendo l'ultima cifra, scriviamo direttamente <b>${val}</b>!`;
+        } else {
+          exp += `Scriviamo <b>${digit}</b>.`;
+        }
+
+        list.push({
+          title: `Moltiplichiamo per le unità (${bUnits})`,
+          explanation: exp,
+          numCols, aDigits, bDigits, p1Digits: [...p1Digits], p2Digits: [...p2Digits], carries: [...carries], finalDigits: [...finalDigits], twoDigitB, activeCol: colIdx
+        });
+
+        carry = nextCarry;
+      }
+
+      if (twoDigitB) {
+        // Puliamo i riporti e mettiamo lo zero segnaposto
+        carries = Array(numCols).fill('');
+        p2Digits[numCols - 1] = '0';
+        list.push({
+          title: 'Lo Zero Segnaposto! 0️⃣',
+          explanation: `Ora moltiplichiamo per le <b>decine (${bTens})</b>. Poiché moltiplichiamo per decine, mettiamo subito uno <b>0 segnaposto</b> nella colonna delle unità!`,
+          numCols, aDigits, bDigits, p1Digits: [...p1Digits], p2Digits: [...p2Digits], carries: [...carries], finalDigits: [...finalDigits], twoDigitB, activeCol: numCols - 1
+        });
+
+        carry = 0;
+        for (let i = aStr.length - 1; i >= 0; i--) {
+          const colIdx = numCols - 1 - (aStr.length - i);
+          const dA = parseInt(aStr[i], 10);
+          const val = dA * bTens + carry;
+          const digit = val % 10;
+          const nextCarry = Math.floor(val / 10);
+
+          p2Digits[colIdx] = String(digit);
+          if (i === 0 && nextCarry > 0) {
+            p2Digits[colIdx - 1] = String(nextCarry);
+          } else if (nextCarry > 0) {
+            carries[colIdx - 1] = '+' + nextCarry;
+          }
+
+          let exp = `Moltiplichiamo <b>${bTens} × ${dA}</b>`;
+          if (carry > 0) exp += ` + <b>${carry}</b> (riporto)`;
+          exp += ` = <b>${val}</b>. `;
+          if (nextCarry > 0 && i > 0) {
+            exp += `Scriviamo <b>${digit}</b> e riportiamo <b>+${nextCarry}</b>.`;
+          } else {
+            exp += `Scriviamo <b>${ i === 0 && nextCarry > 0 ? val : digit }</b>.`;
+          }
+
+          list.push({
+            title: `Moltiplichiamo per le decine (${bTens})`,
+            explanation: exp,
+            numCols, aDigits, bDigits, p1Digits: [...p1Digits], p2Digits: [...p2Digits], carries: [...carries], finalDigits: [...finalDigits], twoDigitB, activeCol: colIdx
+          });
+
+          carry = nextCarry;
+        }
+
+        // Somma dei prodotti parziali
+        finalDigits = String(prod).padStart(numCols, ' ').split('');
+        list.push({
+          title: 'Sommiamo i prodotti parziali! 🎉',
+          explanation: `Sommiamo il primo prodotto parziale (<b>${a * bUnits}</b>) e il secondo (<b>${a * bTens * 10}</b>): otteniamo il prodotto finale <b>${prod}</b>!`,
+          numCols, aDigits, bDigits, p1Digits: [...p1Digits], p2Digits: [...p2Digits], carries: Array(numCols).fill(''), finalDigits: [...finalDigits], twoDigitB, activeCol: -1, done: true
+        });
+      } else {
+        list.push({
+          title: 'Moltiplicazione completata! 🎉',
+          explanation: `Ecco fatto! Il prodotto di <b>${a} × ${b}</b> è <b>${prod}</b>.`,
+          numCols, aDigits, bDigits, p1Digits: [...p1Digits], p2Digits: [...p2Digits], carries: [...carries], finalDigits: [...finalDigits], twoDigitB, activeCol: -1, done: true
+        });
+      }
+
+      return list;
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. DIVISIONE IN COLONNA (METODO ITALIANO PASSO-PASSO)
+    // -------------------------------------------------------------------------
+    function buildDivisionSteps(dividend, divisor) {
+      const divStr = String(dividend);
+      const n = divStr.length;
+      const list = [];
+
+      // Trova quante cifre servono per il primo cappellino
+      let idx = 0;
+      let currentVal = parseInt(divStr[0], 10);
+      while (currentVal < divisor && idx + 1 < n) {
+        idx++;
+        currentVal = currentVal * 10 + parseInt(divStr[idx], 10);
+      }
+
+      const firstCapEnd = idx;
+      let quotientStr = '';
+      let rows = []; // righe di sottrazione e resti parziali sotto il dividendo
+      let broughtDownCols = [];
+
+      list.push({
+        title: 'Mettiamo il cappellino! 🎩',
+        explanation: firstCapEnd === 0
+          ? `Guardiamo la prima cifra a sinistra (<b>${divStr[0]}</b>): poiché ${divStr[0]} è maggiore o uguale a ${divisor}, mettiamo il <b>cappellino</b> sopra il <b>${divStr[0]}</b>.`
+          : `La prima cifra (${divStr[0]}) è più piccola di ${divisor}, quindi prendiamo insieme le prime ${firstCapEnd + 1} cifre: mettiamo il <b>cappellino</b> sopra <b>${currentVal}</b>!`,
+        dividend, divisor, divStr, firstCapEnd, broughtDownCols: [], quotientStr: '', rows: [], highlightMult: -1
+      });
+
+      let stepPos = firstCapEnd;
+      while (stepPos < n) {
+        const qDigit = Math.floor(currentVal / divisor);
+        const prod = qDigit * divisor;
+        const rem = currentVal - prod;
+
+        quotientStr += String(qDigit);
+
+        // Passo A: Quante volte ci sta?
+        list.push({
+          title: `Quante volte il ${divisor} sta nel ${currentVal}?`,
+          explanation: `Guardiamo la tabellina del <b>${divisor}</b> qui a fianco: <b>${divisor} × ${qDigit} = ${prod}</b> (senza superare ${currentVal}). Ci sta <b>${qDigit}</b> volte! Scriviamo <b>${qDigit}</b> nel quoziente.`,
+          dividend, divisor, divStr, firstCapEnd,
+          broughtDownCols: [...broughtDownCols],
+          quotientStr,
+          rows: JSON.parse(JSON.stringify(rows)),
+          highlightMult: qDigit
+        });
+
+        // Passo B: Moltiplichiamo e sottraiamo per trovare il resto parziale
+        rows.push({
+          type: 'sub',
+          text: String(prod),
+          endCol: stepPos
+        });
+
+        const hasMore = stepPos + 1 < n;
+        const nextDigit = hasMore ? divStr[stepPos + 1] : '';
+
+        rows.push({
+          type: 'rem',
+          text: String(rem),
+          endCol: stepPos,
+          nextDigit: '',
+          nextCol: stepPos + 1
+        });
+
+        list.push({
+          title: `Calcoliamo il resto (${currentVal} − ${prod})`,
+          explanation: `Facciamo <b>${qDigit} × ${divisor} = ${prod}</b> e scriviamolo sotto <b>${currentVal}</b>. Sottraiamo: <b>${currentVal} − ${prod} = ${rem}</b> di resto.`,
+          dividend, divisor, divStr, firstCapEnd,
+          broughtDownCols: [...broughtDownCols],
+          quotientStr,
+          rows: JSON.parse(JSON.stringify(rows)),
+          highlightMult: qDigit
+        });
+
+        // Passo C: Abbassiamo la cifra successiva (se c'è)
+        if (hasMore) {
+          broughtDownCols.push(stepPos + 1);
+          rows[rows.length - 1].nextDigit = nextDigit;
+          const newVal = rem * 10 + parseInt(nextDigit, 10);
+
+          list.push({
+            title: `Abbassiamo il ${nextDigit} ↓`,
+            explanation: `Mettiamo un cappellino sul <b>${nextDigit}</b> e facciamolo scendere accanto al resto ${rem}: si forma il numero <b>${newVal}</b>!`,
+            dividend, divisor, divStr, firstCapEnd,
+            broughtDownCols: [...broughtDownCols],
+            quotientStr,
+            rows: JSON.parse(JSON.stringify(rows)),
+            highlightMult: -1
+          });
+
+          currentVal = newVal;
+        } else {
+          currentVal = rem;
+        }
+
+        stepPos++;
+      }
+
+      const finalQ = Math.floor(dividend / divisor);
+      const finalR = dividend % divisor;
+
+      list.push({
+        title: 'Divisione completata! 🎉',
+        explanation: `Non ci sono più cifre da abbassare! Quoziente = <b>${finalQ}</b>, Resto = <b>${finalR}</b>. <br><b>Prova</b>: (${finalQ} × ${divisor}) + ${finalR} = ${finalQ * divisor} + ${finalR} = <b>${dividend}</b> ✔`,
+        dividend, divisor, divStr, firstCapEnd,
+        broughtDownCols: [...broughtDownCols],
+        quotientStr,
+        rows: JSON.parse(JSON.stringify(rows)),
+        highlightMult: -1,
+        done: true
+      });
+
+      return list;
+    }
+
+    // =========================================================================
+    // RENDERIZZAZIONE SUL QUADERNO A QUADRETTI
+    // =========================================================================
+    function renderCurrentStep() {
+      const step = steps[currentStepIndex];
+      document.getElementById('step-badge').textContent = `Passo ${currentStepIndex + 1} di ${steps.length}`;
+      document.getElementById('step-title').innerHTML = step.title;
+      document.getElementById('step-explanation').innerHTML = step.explanation;
+
+      document.getElementById('btn-first').disabled = currentStepIndex === 0;
+      document.getElementById('btn-prev').disabled = currentStepIndex === 0;
+      document.getElementById('btn-next').disabled = currentStepIndex === steps.length - 1;
+      document.getElementById('btn-last').disabled = currentStepIndex === steps.length - 1;
+
+      const canvas = document.getElementById('notebook-canvas');
+      if (currentOp === 'add') canvas.innerHTML = renderAdditionGrid(step);
+      else if (currentOp === 'sub') canvas.innerHTML = renderSubtractionGrid(step);
+      else if (currentOp === 'mul') canvas.innerHTML = renderMultiplicationGrid(step);
+      else if (currentOp === 'div') canvas.innerHTML = renderDivisionGrid(step);
+
+      renderSidePanel(step);
+    }
+
+    function renderPlaceHeaderRow(numCols) {
+      let html = `<div class="flex">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        const label = PLACE_SHORT[pos] || 'uk';
+        const bg = PLACE_BG[Math.min(pos, 3)];
+        html += `<div class="cell-box"><span class="text-xs font-bold px-1.5 py-0.5 rounded ${bg}">${label}</span></div>`;
+      }
+      html += `<div class="cell-box"></div></div>`;
+      return html;
+    }
+
+    // --- RENDER ADDIZIONE ---
+    function renderAdditionGrid(step) {
+      const { numCols, aDigits, bDigits, carries, resDigits, activeCol } = step;
+      let html = `<div class="inline-flex flex-col">`;
+      html += renderPlaceHeaderRow(numCols);
+
+      // Riga riporti
+      html += `<div class="flex">`;
+      for (let c = 0; c < numCols; c++) {
+        const val = carries[c];
+        html += `<div class="cell-box">${val ? `<span class="text-xs font-bold bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded-full">+${val}</span>` : ''}</div>`;
+      }
+      html += `<div class="cell-box"></div></div>`;
+
+      // Primo addendo
+      html += `<div class="flex">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        const isAct = c === activeCol;
+        html += `<div class="cell-box ${getPlaceColorClass(pos)} ${isAct ? 'bg-yellow-100 rounded-lg' : ''}">${aDigits[c]}</div>`;
+      }
+      html += `<div class="cell-box text-indigo-600">+</div></div>`;
+
+      // Secondo addendo
+      html += `<div class="flex border-b-4 border-slate-700">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        const isAct = c === activeCol;
+        html += `<div class="cell-box ${getPlaceColorClass(pos)} ${isAct ? 'bg-yellow-100 rounded-lg' : ''}">${bDigits[c]}</div>`;
+      }
+      html += `<div class="cell-box text-indigo-600">=</div></div>`;
+
+      // Risultato
+      html += `<div class="flex pt-1">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        const isAct = c === activeCol;
+        html += `<div class="cell-box ${getPlaceColorClass(pos)} ${isAct ? 'bg-amber-200 rounded-lg active-step-pulse' : ''}">${resDigits[c]}</div>`;
+      }
+      html += `<div class="cell-box"></div></div>`;
+
+      html += `</div>`;
+      return html;
+    }
+
+    // --- RENDER SOTTRAZIONE ---
+    function renderSubtractionGrid(step) {
+      const { numCols, aOrig, bDigits, crossed, topBadge, resDigits, activeCol } = step;
+      let html = `<div class="inline-flex flex-col">`;
+      html += renderPlaceHeaderRow(numCols);
+
+      // Riga dei prestiti sopra il minuendo
+      html += `<div class="flex">`;
+      for (let c = 0; c < numCols; c++) {
+        const badge = topBadge[c];
+        html += `<div class="cell-box">${badge !== '' ? `<span class="text-xs font-bold bg-rose-100 text-rose-700 border border-rose-300 px-1.5 py-0.5 rounded-md">${badge}</span>` : ''}</div>`;
+      }
+      html += `<div class="cell-box"></div></div>`;
+
+      // Minuendo
+      html += `<div class="flex">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        const isAct = c === activeCol;
+        const isCrossed = crossed[c] || (topBadge[c] !== '' && parseInt(topBadge[c], 10) !== parseInt(aOrig[c], 10));
+        html += `<div class="cell-box ${getPlaceColorClass(pos)} ${isAct ? 'bg-yellow-100 rounded-lg' : ''}">
+          <span class="${isCrossed ? 'line-through opacity-40 text-rose-600' : ''}">${aOrig[c]}</span>
+        </div>`;
+      }
+      html += `<div class="cell-box text-rose-600">−</div></div>`;
+
+      // Sottraendo
+      html += `<div class="flex border-b-4 border-slate-700">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        const isAct = c === activeCol;
+        html += `<div class="cell-box ${getPlaceColorClass(pos)} ${isAct ? 'bg-yellow-100 rounded-lg' : ''}">${bDigits[c]}</div>`;
+      }
+      html += `<div class="cell-box text-rose-600">=</div></div>`;
+
+      // Differenza
+      html += `<div class="flex pt-1">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        const isAct = c === activeCol;
+        html += `<div class="cell-box ${getPlaceColorClass(pos)} ${isAct ? 'bg-amber-200 rounded-lg active-step-pulse' : ''}">${resDigits[c]}</div>`;
+      }
+      html += `<div class="cell-box"></div></div>`;
+
+      html += `</div>`;
+      return html;
+    }
+
+    // --- RENDER MOLTIPLICAZIONE ---
+    function renderMultiplicationGrid(step) {
+      const { numCols, aDigits, bDigits, p1Digits, p2Digits, carries, finalDigits, twoDigitB, activeCol } = step;
+      let html = `<div class="inline-flex flex-col">`;
+      html += renderPlaceHeaderRow(numCols);
+
+      // Riga riporti
+      html += `<div class="flex">`;
+      for (let c = 0; c < numCols; c++) {
+        html += `<div class="cell-box">${carries[c] ? `<span class="text-xs font-bold bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded-full">${carries[c]}</span>` : ''}</div>`;
+      }
+      html += `<div class="cell-box"></div></div>`;
+
+      // Moltiplicando
+      html += `<div class="flex">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        html += `<div class="cell-box ${getPlaceColorClass(pos)}">${aDigits[c]}</div>`;
+      }
+      html += `<div class="cell-box text-amber-600">×</div></div>`;
+
+      // Moltiplicatore
+      html += `<div class="flex border-b-4 border-slate-700">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        html += `<div class="cell-box ${getPlaceColorClass(pos)}">${bDigits[c]}</div>`;
+      }
+      html += `<div class="cell-box text-amber-600">=</div></div>`;
+
+      // Primo prodotto parziale
+      html += `<div class="flex pt-1">`;
+      for (let c = 0; c < numCols; c++) {
+        const pos = numCols - 1 - c;
+        const isAct = c === activeCol && p2Digits.every(x => x === '');
+        html += `<div class="cell-box ${getPlaceColorClass(pos)} ${isAct ? 'bg-amber-200 rounded-lg active-step-pulse' : ''}">${p1Digits[c]}</div>`;
+      }
+      html += `<div class="cell-box text-slate-400 text-sm">${twoDigitB ? '+' : ''}</div></div>`;
+
+      // Secondo prodotto parziale + Somma finale (se a 2 cifre)
+      if (twoDigitB) {
+        html += `<div class="flex border-b-4 border-slate-700">`;
+        for (let c = 0; c < numCols; c++) {
+          const pos = numCols - 1 - c;
+          const isZeroSegnaposto = c === numCols - 1 && p2Digits[c] === '0';
+          const isAct = c === activeCol && p2Digits.some(x => x !== '');
+          html += `<div class="cell-box ${isZeroSegnaposto ? 'text-purple-600 bg-purple-100 rounded-lg' : getPlaceColorClass(pos)} ${isAct ? 'bg-amber-200 rounded-lg active-step-pulse' : ''}">${p2Digits[c]}</div>`;
+        }
+        html += `<div class="cell-box text-slate-400 text-sm">=</div></div>`;
+
+        html += `<div class="flex pt-1">`;
+        for (let c = 0; c < numCols; c++) {
+          const pos = numCols - 1 - c;
+          html += `<div class="cell-box ${getPlaceColorClass(pos)} ${step.done ? 'bg-emerald-100 rounded-lg' : ''}">${finalDigits[c]}</div>`;
+        }
+        html += `<div class="cell-box"></div></div>`;
+      }
+
+      html += `</div>`;
+      return html;
+    }
+
+    // --- RENDER DIVISIONE IN COLONNA (METODO ITALIANO) ---
+    function renderDivisionGrid(step) {
+      const { divStr, divisor, firstCapEnd, broughtDownCols, quotientStr, rows } = step;
+      const n = divStr.length;
+      const divisorStr = String(divisor);
+      const rightCols = Math.max(divisorStr.length, n, 3);
+
+      let html = `<div class="inline-flex items-start">`;
+
+      // LATO SINISTRO: DIVIDENDO E SOTTRAZIONI PARZIALI
+      html += `<div class="flex flex-col border-r-4 border-slate-700 pr-1">`;
+
+      // Riga Dividendo con Cappellini
+      html += `<div class="flex relative mt-2">`;
+      for (let c = 0; c < n; c++) {
+        const posFromRight = n - 1 - c;
+        const isUnderFirstCap = c <= firstCapEnd;
+        const isBroughtDown = broughtDownCols.includes(c);
+
+        let capHtml = '';
+        if (c === 0) {
+          // Disegniamo un unico cappellino largo da 0 a firstCapEnd
+          const widthPx = (firstCapEnd + 1) * 100;
+          capHtml = `<div class="cappellino" style="width: calc(${(firstCapEnd + 1) * 100}% - 6px); right: auto;"></div>`;
+        } else if (isBroughtDown) {
+          capHtml = `<div class="cappellino-single"></div>`;
+        }
+
+        html += `<div class="cell-box ${getPlaceColorClass(posFromRight)}">
+          ${capHtml}
+          ${divStr[c]}
+        </div>`;
+      }
+      html += `</div>`;
+
+      // Righe di sottrazione e resti parziali
+      rows.forEach((row) => {
+        if (row.type === 'sub') {
+          const subChars = row.text.split('');
+          const startCol = row.endCol - subChars.length + 1;
+          html += `<div class="flex">`;
+          for (let c = 0; c < n; c++) {
+            if (c >= startCol && c <= row.endCol) {
+              const ch = subChars[c - startCol];
+              html += `<div class="cell-box text-rose-600 border-b-2 border-slate-700">${c === startCol ? '<span class="text-xs mr-0.5">−</span>' : ''}${ch}</div>`;
+            } else {
+              html += `<div class="cell-box"></div>`;
+            }
+          }
+          html += `</div>`;
+        } else if (row.type === 'rem') {
+          const remChars = row.text.split('');
+          const startCol = row.endCol - remChars.length + 1;
+          html += `<div class="flex">`;
+          for (let c = 0; c < n; c++) {
+            if (c >= startCol && c <= row.endCol) {
+              const ch = remChars[c - startCol];
+              html += `<div class="cell-box text-slate-800">${ch}</div>`;
+            } else if (c === row.nextCol && row.nextDigit !== '') {
+              html += `<div class="cell-box text-emerald-600 bg-emerald-50 rounded-lg">
+                <span class="absolute -top-3 text-[10px] text-emerald-600 font-bold">↓</span>
+                ${row.nextDigit}
+              </div>`;
+            } else {
+              html += `<div class="cell-box"></div>`;
+            }
+          }
+          html += `</div>`;
+        }
+      });
+
+      html += `</div>`; // fine lato sinistro
+
+      // LATO DESTRO: DIVISORE E QUOZIENTE
+      html += `<div class="flex flex-col pl-1 mt-2">`;
+
+      // Riga Divisore
+      html += `<div class="flex border-b-4 border-slate-700">`;
+      for (let c = 0; c < rightCols; c++) {
+        const ch = divisorStr[c] || '';
+        html += `<div class="cell-box text-indigo-700">${ch}</div>`;
+      }
+      html += `</div>`;
+
+      // Riga Quoziente
+      html += `<div class="flex pt-1">`;
+      for (let c = 0; c < rightCols; c++) {
+        const ch = quotientStr[c] || '';
+        const isLatest = c === quotientStr.length - 1 && ch !== '' && !step.done;
+        html += `<div class="cell-box text-emerald-700 ${isLatest ? 'bg-amber-200 rounded-lg active-step-pulse' : ''}">${ch}</div>`;
+      }
+      html += `</div>`;
+
+      html += `</div>`; // fine lato destro
+      html += `</div>`;
+      return html;
+    }
+
+    // =========================================================================
+    // PANNELLO LATERALE: TABELLINA DEL DIVISORE / PROVA / TRUCCHI
+    // =========================================================================
+    function renderSidePanel(step) {
+      const titleEl = document.getElementById('side-panel-title');
+      const contentEl = document.getElementById('side-panel-content');
+
+      if (currentOp === 'div') {
+        titleEl.innerHTML = `<span>📋</span> Tabellina del ${step.divisor}`;
+        let html = `<p class="text-xs text-slate-500 mb-2">Cerca il risultato più vicino senza superare il numero sotto il cappellino:</p>`;
+        html += `<div class="grid grid-cols-2 gap-1.5 text-xs sm:text-sm">`;
+        for (let m = 0; m <= 9; m++) {
+          const isHigh = step.highlightMult === m;
+          html += `<div class="px-2.5 py-1.5 rounded-lg border font-semibold flex justify-between ${
+            isHigh
+              ? 'bg-amber-300 border-amber-500 text-slate-900 font-bold scale-105 shadow-sm'
+              : 'bg-slate-50 border-slate-200 text-slate-700'
+          }">
+            <span>${step.divisor} × ${m} =</span>
+            <span class="font-bold">${step.divisor * m}</span>
+          </div>`;
+        }
+        html += `</div>`;
+        const q = Math.floor(step.dividend / step.divisor);
+        const r = step.dividend % step.divisor;
+        html += `<div class="mt-3 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs">
+          <div class="font-bold text-emerald-900 mb-0.5">✔ Prova della Divisione:</div>
+          <div class="text-emerald-800">(${q} × ${step.divisor}) + ${r} = <b>${step.dividend}</b></div>
+        </div>`;
+        contentEl.innerHTML = html;
+      } else if (currentOp === 'add') {
+        titleEl.innerHTML = `<span>💡</span> Regola d'Oro dell'Addizione`;
+        contentEl.innerHTML = `
+          <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 space-y-2 text-xs sm:text-sm">
+            <p><b>1.</b> Parti sempre da destra, dalla colonna delle <b>Unità (u)</b>.</p>
+            <p><b>2.</b> Se la somma di una colonna raggiunge o supera <b>10</b>, scrivi solo la cifra delle unità e porta la decina in alto nella colonna a sinistra!</p>
+            <p class="pt-1 border-t border-blue-200 font-semibold text-blue-900">
+              Prova (Proprietà Commutativa):<br>${num2} + ${num1} = <b>${num1 + num2}</b> ✔
+            </p>
+          </div>`;
+      } else if (currentOp === 'sub') {
+        titleEl.innerHTML = `<span>💡</span> Come funziona il Prestito`;
+        contentEl.innerHTML = `
+          <div class="p-3 rounded-xl bg-rose-50 border border-rose-200 space-y-2 text-xs sm:text-sm">
+            <p><b>1.</b> Il numero sopra (<b>Minuendo</b>) deve essere sempre maggiore o uguale a quello sotto.</p>
+            <p><b>2.</b> Se una cifra sopra è più piccola di quella sotto, bussa alla colonna a sinistra: <b>1 cambio</b> vale <b>+10</b> nella tua colonna!</p>
+            <p class="pt-1 border-t border-rose-200 font-semibold text-rose-900">
+              ✔ Prova con l'operazione inversa:<br>
+              ${num1 - num2} + ${num2} = <b>${num1}</b>
+            </p>
+          </div>`;
+      } else if (currentOp === 'mul') {
+        titleEl.innerHTML = `<span>💡</span> Segreto della Moltiplicazione`;
+        contentEl.innerHTML = `
+          <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 space-y-2 text-xs sm:text-sm">
+            <p><b>1.</b> Prima moltiplica tutte le cifre di sopra per le <b>unità</b> del moltiplicatore.</p>
+            <p><b>2.</b> Quando passi alle <b>decine</b>, metti sempre lo <b class="text-purple-700">0 segnaposto</b> sotto le unità perché stai moltiplicando per decine (×10)!</p>
+            <p><b>3.</b> Infine somma i due prodotti parziali.</p>
+          </div>`;
+      }
+    }
+
+    // =========================================================================
+    // SEZIONE 2: LABORATORIO DELLE PROPRIETÀ
+    // =========================================================================
+    let currentProperty = 'commutativa';
+
+    function selectProperty(prop) {
+      currentProperty = prop;
+      ['commutativa', 'associativa', 'distributiva', 'invariantiva'].forEach(p => {
+        const btn = document.getElementById('prop-btn-' + p);
+        if (p === prop) {
+          btn.className = 'p-3 rounded-2xl font-bold text-sm border-2 transition bg-indigo-600 text-white border-indigo-700 shadow-sm';
+        } else {
+          btn.className = 'p-3 rounded-2xl font-bold text-sm border-2 transition bg-white text-slate-700 border-slate-200 hover:bg-slate-50';
+        }
+      });
+
+      const container = document.getElementById('property-lab-container');
+      if (prop === 'commutativa') {
+        container.innerHTML = `
+          <div class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold">Vale per: Addizione (+) e Moltiplicazione (×)</span>
+                <h3 class="text-lg sm:text-xl font-bold mt-1">🔄 Proprietà Commutativa</h3>
+              </div>
+            </div>
+            <p class="text-slate-700 text-sm sm:text-base">
+              <b>Regola:</b> Cambiando l'ordine degli addendi (o dei fattori), il risultato non cambia!
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-center space-y-2">
+                <div class="text-xs font-bold uppercase text-blue-600">Nell'Addizione</div>
+                <div class="text-2xl font-bold text-slate-800">4 + 3 = <span class="text-blue-600">7</span></div>
+                <div class="text-2xl">🟦🟦🟦🟦 + 🟧🟧🟧</div>
+                <div class="text-sm font-semibold text-slate-500">↕ Scambiamo il posto!</div>
+                <div class="text-2xl">🟧🟧🟧 + 🟦🟦🟦🟦</div>
+                <div class="text-2xl font-bold text-slate-800">3 + 4 = <span class="text-blue-600">7</span></div>
+              </div>
+              <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-center space-y-2">
+                <div class="text-xs font-bold uppercase text-amber-700">Nella Moltiplicazione</div>
+                <div class="text-2xl font-bold text-slate-800">3 × 5 = <span class="text-amber-600">15</span></div>
+                <p class="text-xs text-slate-600">3 righe da 5 quadratini oppure 5 righe da 3 quadratini:</p>
+                <div class="text-2xl font-bold text-slate-800">5 × 3 = <span class="text-amber-600">15</span></div>
+                <p class="text-xs text-emerald-700 font-semibold">È utilissima per fare la PROVA dell'addizione e della moltiplicazione!</p>
+              </div>
+            </div>
+          </div>`;
+      } else if (prop === 'associativa') {
+        container.innerHTML = `
+          <div class="space-y-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold">Vale per: Addizione (+) e Moltiplicazione (×)</span>
+              <h3 class="text-lg sm:text-xl font-bold mt-1">🧺 Proprietà Associativa</h3>
+            </div>
+            <p class="text-slate-700 text-sm sm:text-base">
+              <b>Regola:</b> Se sostituisci a due numeri la loro somma (o il loro prodotto), il risultato finale non cambia. Cerca sempre gli <b>Amici del 10</b>!
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+                <div class="font-bold text-emerald-900">Esempio furbo con gli Amici del 10:</div>
+                <div class="text-xl font-bold">17 + 3 + 25 = ?</div>
+                <div class="text-sm text-slate-700">Mettiamo nel sacchetto <b>(17 + 3)</b> perché 7 e 3 fanno 10!</div>
+                <div class="text-lg font-bold text-emerald-700">(17 + 3) + 25 = 20 + 25 = 45</div>
+              </div>
+              <div class="p-4 rounded-2xl bg-purple-50 border border-purple-200 space-y-2">
+                <div class="font-bold text-purple-900">Nella Moltiplicazione:</div>
+                <div class="text-xl font-bold">6 × 5 × 2 = ?</div>
+                <div class="text-sm text-slate-700">Associamo prima <b>(5 × 2)</b> che fa subito 10!</div>
+                <div class="text-lg font-bold text-purple-700">6 × (5 × 2) = 6 × 10 = 60</div>
+              </div>
+            </div>
+          </div>`;
+      } else if (prop === 'distributiva') {
+        container.innerHTML = `
+          <div class="space-y-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Il superpotere della Moltiplicazione (×)</span>
+              <h3 class="text-lg sm:text-xl font-bold mt-1">✂️ Proprietà Distributiva</h3>
+            </div>
+            <p class="text-slate-700 text-sm sm:text-base">
+              <b>Regola:</b> Per moltiplicare un numero difficile, puoi <b>spezzarlo</b> in decine + unità, moltiplicare ciascuna parte e poi sommare i risultati!
+            </p>
+            <div class="p-4 rounded-2xl bg-amber-50 border-2 border-amber-200 space-y-3 text-center">
+              <div class="text-xl sm:text-2xl font-bold text-slate-800">14 × 6 = ?</div>
+              <div class="text-sm font-semibold text-amber-900">✂️ Spezziamo il 14 in <span class="text-red-600">10</span> + <span class="text-blue-600">4</span>:</div>
+              <div class="text-lg sm:text-xl font-bold">
+                (<span class="text-red-600">10</span> + <span class="text-blue-600">4</span>) × 6 =
+                (<span class="text-red-600">10 × 6</span>) + (<span class="text-blue-600">4 × 6</span>)
+              </div>
+              <div class="text-xl font-bold text-emerald-700">
+                60 + 24 = 84 🎉
+              </div>
+            </div>
+          </div>`;
+      } else if (prop === 'invariantiva') {
+        container.innerHTML = `
+          <div class="space-y-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-xs font-bold">Vale per: Sottrazione (−) e Divisione (:)</span>
+              <h3 class="text-lg sm:text-xl font-bold mt-1">⚖️ Proprietà Invariantiva</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 space-y-2">
+                <div class="font-bold text-rose-900">Nella Sottrazione (+ o − lo stesso numero):</div>
+                <p class="text-xs text-slate-600">Aggiungendo o togliendo lo stesso numero a entrambi i termini, la differenza non cambia.</p>
+                <div class="text-lg font-bold">53 − 18 = ?</div>
+                <div class="text-sm text-rose-700 font-semibold">Aggiungiamo +2 a entrambi per arrotondare il 18 a 20:</div>
+                <div class="text-lg font-bold text-emerald-700">(53 + 2) − (18 + 2) = 55 − 20 = 35!</div>
+              </div>
+              <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+                <div class="font-bold text-emerald-900">Nella Divisione (× o : per lo stesso numero):</div>
+                <p class="text-xs text-slate-600">Moltiplicando o dividendo entrambi i termini per lo stesso numero, il quoziente non cambia.</p>
+                <div class="text-lg font-bold">120 : 20 = ?</div>
+                <div class="text-sm text-emerald-700 font-semibold">Dividiamo entrambi per :10 (togliamo uno zero!):</div>
+                <div class="text-lg font-bold text-indigo-700">(120 : 10) : (20 : 10) = 12 : 2 = 6!</div>
+              </div>
+            </div>
+          </div>`;
+      }
+    }
+
+    // =========================================================================
+    // SEZIONE 3: QUIZ INTERATTIVO DI 4ª ELEMENTARE
+    // =========================================================================
+    const QUIZ_QUESTIONS = [
+      {
+        q: "Nella divisione 438 : 3, sopra quale cifra mettiamo il primo cappellino?",
+        options: ["Sopra il 4, perché 4 è maggiore di 3", "Sopra 43", "Sopra l'8"],
+        correct: 0,
+        explain: "Bravo! Poiché la prima cifra (4) è maggiore o uguale al divisore (3), basta prendere il 4 da solo."
+      },
+      {
+        q: "Nella moltiplicazione 45 × 23, perché nella seconda riga mettiamo uno 0 sotto le unità?",
+        options: ["Perché 2 × 5 fa 0", "Perché stiamo moltiplicando per 2 decine (cioè × 20)", "Per bellezza"],
+        correct: 1,
+        explain: "Esatto! Il 2 del numero 23 vale 2 decine (20), quindi mettiamo lo zero segnaposto nelle unità."
+      },
+      {
+        q: "Quale proprietà usi se calcoli 18 + 7 + 3 facendo 18 + (7 + 3) = 18 + 10 = 28?",
+        options: ["Proprietà Commutativa", "Proprietà Associativa", "Proprietà Invariantiva"],
+        correct: 1,
+        explain: "Proprio così! Hai associato il 7 e il 3 (amici del 10) con la Proprietà Associativa."
+      },
+      {
+        q: "Come si fa la prova di una divisione con il resto?",
+        options: ["(Quoziente × Divisore) + Resto = Dividendo", "Quoziente + Divisore = Dividendo", "Dividendo − Resto"],
+        correct: 0,
+        explain: "Perfetto! Moltiplichi il quoziente per il divisore e poi aggiungi il resto."
+      },
+      {
+        q: "Se trasformi 47 − 19 in (47 + 1) − (19 + 1) = 48 − 20 = 28, quale proprietà hai usato?",
+        options: ["Proprietà Distributiva", "Proprietà Commutativa", "Proprietà Invariantiva"],
+        correct: 2,
+        explain: "Complimenti! Aggiungendo +1 a entrambi i termini della sottrazione hai applicato la Proprietà Invariantiva."
+      }
+    ];
+
+    let currentQuizIdx = 0;
+    let quizScore = 0;
+
+    function renderQuizQuestion() {
+      const item = QUIZ_QUESTIONS[currentQuizIdx];
+      const container = document.getElementById('quiz-container');
+      let html = `
+        <div class="space-y-4">
+          <div class="text-xs font-bold text-slate-400">Domanda ${currentQuizIdx + 1} di ${QUIZ_QUESTIONS.length}</div>
+          <p class="text-base sm:text-lg font-bold text-slate-800">${item.q}</p>
+          <div class="space-y-2">`;
+      item.options.forEach((opt, i) => {
+        html += `<button onclick="checkQuizAnswer(${i})" id="quiz-opt-${i}" class="w-full text-left p-3.5 rounded-xl border-2 border-slate-200 hover:border-indigo-400 font-semibold text-sm sm:text-base transition flex items-center justify-between">
+          <span>${opt}</span>
+        </button>`;
+      });
+      html += `</div>
+          <div id="quiz-feedback" class="hidden p-3.5 rounded-xl text-sm font-medium"></div>
+        </div>`;
+      container.innerHTML = html;
+    }
+
+    function checkQuizAnswer(selectedIdx) {
+      const item = QUIZ_QUESTIONS[currentQuizIdx];
+      const fb = document.getElementById('quiz-feedback');
+      fb.classList.remove('hidden');
+
+      item.options.forEach((_, i) => {
+        const btn = document.getElementById('quiz-opt-' + i);
+        btn.disabled = true;
+        if (i === item.correct) {
+          btn.className = 'w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-sm sm:text-base';
+        } else if (i === selectedIdx) {
+          btn.className = 'w-full text-left p-3.5 rounded-xl border-2 border-rose-400 bg-rose-50 text-rose-900 font-semibold text-sm sm:text-base';
+        }
+      });
+
+      if (selectedIdx === item.correct) {
+        quizScore += 10;
+        document.getElementById('quiz-score').textContent = quizScore;
+        fb.className = 'p-3.5 rounded-xl text-sm font-medium bg-emerald-100 text-emerald-900 border border-emerald-300';
+        fb.innerHTML = `🎉 <b>Risposta Esatta!</b> ${item.explain}`;
+      } else {
+        fb.className = 'p-3.5 rounded-xl text-sm font-medium bg-rose-100 text-rose-900 border border-rose-300';
+        fb.innerHTML = `🦉 <b>Quasi!</b> ${item.explain}`;
+      }
+
+      fb.innerHTML += `<div class="mt-3 text-right">
+        <button onclick="nextQuizQuestion()" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-xl text-xs sm:text-sm shadow">
+          ${currentQuizIdx + 1 < QUIZ_QUESTIONS.length ? 'Prossima Domanda ▶' : 'Ricomincia il Quiz 🔄'}
+        </button>
+      </div>`;
+    }
+
+    function nextQuizQuestion() {
+      currentQuizIdx = (currentQuizIdx + 1) % QUIZ_QUESTIONS.length;
+      renderQuizQuestion();
+    }
+
+    // Avvio iniziale sulla Divisione a 3 cifre (438 : 3)
+    window.addEventListener('DOMContentLoaded', () => {
+      selectOperation('div');
+    });
+  </script>
+</body>
+</html>
